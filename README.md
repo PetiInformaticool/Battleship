@@ -3,7 +3,7 @@ BATTLESHIP
 Run with "make run".
 
 Rules
-==
+======
 Both players place their K ships on a NxN grid. They start with C currency.
 They take turns placing bombs on the enemy's grid.
 There are 4 types of bombs.

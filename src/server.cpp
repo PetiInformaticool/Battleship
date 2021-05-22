@@ -10,7 +10,7 @@ using namespace std;
 int len[2][10];
 
 int sum (short ship[]) {
-  return ship[1] + ship[2] + ship[3] + ship[4];
+  return ship[2] + ship[3] + ship[4] + ship[5];
 }
 
 void print(board b[2]) {
@@ -32,7 +32,7 @@ int main (int argc, char** argv) {
 	pipe[1] = fopen("/home/alex/Desktop/battleship/pipes/playerX", "rb");
 	pipe[2] = fopen("/home/alex/Desktop/battleship/pipes/server0", "wb");
 	pipe[3] = fopen("/home/alex/Desktop/battleship/pipes/player0", "rb");
-	short ships[2][5] = {{0, 3, 3, 2, 1}, {0, 3, 3, 2, 1}};
+	short ships[2][6] = {{0, 0, 3, 2, 1, 1}, {0, 0, 3, 2, 1, 1}};
 	board b[2];
 	setFree(b[0]);
 	setFree(b[1]);
@@ -73,7 +73,7 @@ int main (int argc, char** argv) {
 	int count[2] = {0, 0};
 	Player2 KinderBueno;
 	turn = 0;
-	while (count[0] < 9 && count[1] < 9) {
+	while (count[0] < 7 && count[1] < 7) {
 		sendBoard(pipe[2 * turn], b[turn]);
 		fread(&KinderBueno, sizeof(KinderBueno), 1, pipe[1+2*turn]);
 		if (Fleet[1 - turn].board[KinderBueno.x][KinderBueno.y] != FREE) {
@@ -120,7 +120,7 @@ int main (int argc, char** argv) {
 		system("clear");
 		printf("\n\n");
 	}
-	if (count[0] == 9 && count[1] == 9) {
+	if (count[0] == 7 && count[1] == 7) {
 		cout << "DRAW!!\n\n\n\n";
 		print(b);
 	}

@@ -14,7 +14,7 @@ int main (int argc, char** argv) {
 	pipe[0] = fopen("/home/alex/Desktop/battleship/pipes/serverX", "rb");
 	pipe[1] = fopen("/home/alex/Desktop/battleship/pipes/playerX", "wb");
 	board b;
-	int ships[]= {0, 3, 3, 2, 1};
+	int ships[]= {0, 0, 3, 2, 1, 1};
 	while (1) {
 		b = getBoard(pipe[0]);
 		if (b.state == 1) {
@@ -22,7 +22,7 @@ int main (int argc, char** argv) {
 		}
 		int shiplen, correct;
 		do {
-		  shiplen = rand() % 4 + 1;
+		  shiplen = rand() % 4 + 2;
 	  }while(!ships[shiplen]);
 	  do {
 			int x = rand() % LENGTH;
