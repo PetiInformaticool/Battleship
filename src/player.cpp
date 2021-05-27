@@ -11,8 +11,8 @@ using namespace std;
 int main (int argc, char** argv) {
 	FILE* pipe[4];
 	srand(time(NULL));
-	pipe[0] = fopen("/home/alex/Desktop/battleship/pipes/serverX", "rb");
-	pipe[1] = fopen("/home/alex/Desktop/battleship/pipes/playerX", "wb");
+	pipe[0] = fopen("pipes/serverX", "rb");
+	pipe[1] = fopen("pipes/playerX", "wb");
 	board b;
 	int ships[]= {0, 0, 3, 2, 1, 1};
 	while (1) {

@@ -7,8 +7,8 @@ using namespace std;
 
 int main () {
 	FILE* pipe[2];
-  pipe[0] = fopen("/home/alex/Desktop/battleship/pipes/server0", "rb");
-  pipe[1] = fopen("/home/alex/Desktop/battleship/pipes/player0", "wb");
+  pipe[0] = fopen("pipes/server0", "rb");
+  pipe[1] = fopen("pipes/player0", "wb");
   board b;
 	int ships[]= {0, 0, 3, 2, 1, 1};
 	while (1) {

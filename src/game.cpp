@@ -34,6 +34,7 @@ bool placeShip (board &b, const Player1 a, short ships[], char ch) {
 }
 
 void discoverShip (board &b, const board Fleet, int id) {
+	printf( "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n\n\n");
   for (int i = 0; i < LENGTH; i++)
     for (int j = 0; j < WIDTH; j++)
       if (Fleet.board[i][j] == id + '0') {

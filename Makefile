@@ -13,6 +13,9 @@ pipes/server0: | pipes
 bin:
 	mkdir bin
 	
+bin/viewer.o: src/viewer.cpp src/viewer.h | bin
+	g++ -c src/viewer.cpp -o bin/viewer.o
+	
 bin/game.o: src/game.cpp src/game.h | bin
 	g++ -c src/game.cpp -o bin/game.o
 
@@ -28,14 +31,16 @@ bin/player.o: src/player.cpp src/protocol.h src/game.h | bin
 bin/player2.o: src/player2.cpp src/protocol.h src/game.h | bin
 	g++ -c src/player2.cpp -o bin/player2.o
 
-bin/server: bin/server.o  bin/game.o bin/protocol.o | bin
-	g++ bin/server.o bin/game.o bin/protocol.o  -o bin/server
+bin/server: bin/server.o  bin/viewer.o bin/game.o bin/protocol.o | bin
+	g++ bin/server.o bin/viewer.o bin/game.o bin/protocol.o  -lglut -lGL -lGLEW -o bin/server
 
 bin/player: bin/player.o bin/game.o bin/protocol.o | bin
 	g++ bin/player.o bin/game.o bin/protocol.o -o bin/player
 
 bin/player2: bin/player2.o bin/game.o bin/protocol.o | bin
 	g++ bin/player2.o bin/game.o bin/protocol.o -o bin/player2
+bin/texture: src/texture.cpp
+	g++  src/texture.cpp -lglut -lGL -lGLU -lGLEW -lglfw -ldl  -o bin/texture 
 
 kill: 
 	killall server & wait
