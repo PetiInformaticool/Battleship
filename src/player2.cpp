@@ -6,6 +6,7 @@
 using namespace std;
 
 int main () {
+	srand(time(NULL));
 	FILE* pipe[2];
   pipe[0] = fopen("pipes/server0", "rb");
   pipe[1] = fopen("pipes/player0", "wb");

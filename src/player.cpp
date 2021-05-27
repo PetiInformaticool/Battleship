@@ -22,11 +22,11 @@ int main (int argc, char** argv) {
 		}
 		int shiplen, correct;
 		do {
-		  shiplen = rand() % 4 + 2;
+		  shiplen = (rand() / 2) % 4 + 2;
 	  }while(!ships[shiplen]);
 	  do {
-			int x = rand() % LENGTH;
-			int y = rand() % WIDTH;
+			int x = (rand() / 2) % LENGTH;
+			int y = (rand() / 2) % WIDTH;
 			int dir = rand() % 4;
 			Player1 lmao = {x, y, dir, shiplen};
 			fwrite(&lmao, sizeof(lmao), 1, pipe[1]);

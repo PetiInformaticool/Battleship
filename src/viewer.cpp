@@ -67,11 +67,78 @@ void drawCoordinatesSystem() {
   //drawLine(0, -10, 0, 10);
 }
 
-void drawBoard (board b[]) {
+void drawBoat() {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glColor3f(0.2f, 0.2f, 0.2f);
+  glBegin(GL_POLYGON); 
+    glVertex2f(0.f, 0.10);
+    glVertex2f(0.10f, 0.0f);
+    glVertex2f(0.30, 0.0f);
+    glVertex2f(0.40f, 0.10f);
+  glEnd();
+  glColor3f(0.6f, 0.6f, 0.6f);
+  //drawLine(0.07f, 0.10f, 0.09f, 0.13);
+  glBegin(GL_POLYGON);
+    glVertex2f(0.07f, 0.10);
+		glVertex2f(0.09f, 0.13);
+		glVertex2f(0.12f, 0.13);
+		glVertex2f(0.14f, 0.10);
+  glEnd();
+  glLineWidth(1.f); 
+  drawLine(0.09f, 0.13f, 0.06f, 0.15f);
+  drawRect(0.25, 0.10, 0.32, 0.17);
+  glBegin(GL_TRIANGLES);
+    glVertex2f(0.32f, 0.10f);
+    glVertex2f(0.32, 0.145);
+    glVertex2f(0.34, 0.10);
+  glEnd();
+}
+void drawBoat2() {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glColor3f(0.2f, 0.2f, 0.2f);
+  glBegin(GL_POLYGON); 
+    glVertex2f(0.10f, 0.0);
+    glVertex2f(0.0f, 0.10f);
+    glVertex2f(0.0, 0.30f);
+    glVertex2f(0.10f, 0.40f);
+  glEnd();
+  glColor3f(0.6f, 0.6f, 0.6f);
+  glBegin(GL_POLYGON);
+    glVertex2f(0.10f, 0.07);
+		glVertex2f(0.13f, 0.09);
+		glVertex2f(0.13f, 0.12);
+		glVertex2f(0.10f, 0.14);
+  glEnd();
+  glLineWidth(1.f); 
+  drawLine(0.13f, 0.09f, 0.15f, 0.07f);
+  drawRect(0.10, 0.25, 0.17, 0.32);
+  glBegin(GL_TRIANGLES);
+    glVertex2f(0.10f, 0.32f);
+    glVertex2f(0.145, 0.32);
+    glVertex2f(0.10, 0.34);
+  glEnd();
+}
+
+void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
+  x1 = -1;
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 10; j++) {
+			if (b.board[i][j]==l) {
+				if (x1 == -1) {
+					x1 = i, y1 = j;
+				}
+				else
+				  x2 = i, y2 = j;
+			}
+		}
+}
+
+void drawBoard (board b[], bool tristutz) {
 	glClear(GL_COLOR_BUFFER_BIT);
+	
   glLoadIdentity();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  //glColor3f(0.0f/255, 21.0f/255, 35.0f/255);
+	glColor3f(1.0f, 1.0f, 1.0f);
   texDat = stbi_load("water-texture-breeze\ (1).jpg", &width, &height, &nr, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
   glEnable(GL_TEXTURE_2D);
@@ -89,7 +156,7 @@ void drawBoard (board b[]) {
 		for (int j = 0; j < 10; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glLineWidth(2.0f);
+			glLineWidth(3.0f);
 			glBegin(GL_POLYGON);
 				glVertex2f(2.0f * i / 10, 2.0f * j / 10);
 				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * j / 10);
@@ -115,13 +182,36 @@ void drawBoard (board b[]) {
 				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
 			}
  		}
+ 	for (char l = '0'; l < '7'; l++) {
+		int x1, y1, x2, y2;
+		findBoat(b[0], l, x1, y1, x2, y2);
+		if (x1 == x2 && x1 != -1) {
+			int i = y1;
+			int j = 10 - x1 - 1;
+			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			glScalef((y2 - y1 + 1) / 2.0f , 1.0f, 1.0f);
+			drawBoat();
+			glLoadIdentity();
+			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
+			//glScalef(1.0f, 1.0f, 1.0f);
+		}
+		if (y1 == y2 && x1 != -1) {
+			int i = y2;
+			int j = 10 - x2 - 1;
+			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			glScalef(1.0f, (x2 - x1 + 1) / 2.0f, 1.0f);
+			drawBoat2();
+			glLoadIdentity();
+			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
+		}
+	}
 	glLoadIdentity();
 	glTranslatef(0.5f-0.25f, -1.5f, 0.0);
 	for (int i = 0; i < 10; i++)
 		for (int j = 0; j < 10; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glLineWidth(2.0f);
+			glLineWidth(3.0f);
 			glBegin(GL_POLYGON);
 				glVertex2f(2.0f * i / 10, 2.0f * j / 10);
 				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * j / 10);
@@ -147,6 +237,29 @@ void drawBoard (board b[]) {
 				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
 			}
  		}
+ 	for (char l = '0'; l < '7'; l++) {
+		int x1, y1, x2, y2;
+		findBoat(b[1], l, x1, y1, x2, y2);
+		if (x1 == x2 && x1 != -1) {
+			int i = y1;
+			int j = 10 - x1 - 1;
+			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			//printf("%c &d\n", l, y2 - y1  + 1);
+			drawBoat();
+			glLoadIdentity();
+			glTranslatef(0.5f-0.25f, -1.5f, 0.0);
+			//glScalef(1.0f, 1.0f, 1.0f);
+		}
+		if (y1 == y2 && x1 != -1) {
+			int i = y2;
+			int j = 10 - x2 - 1;
+			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			glScalef(1.0f, (x2 - x1 + 1) / 2.0f, 1.0f);
+			drawBoat2();
+			glLoadIdentity();
+			glTranslatef(0.5f-0.25f, -1.5f, 0.0);
+		}
+	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	texDat = stbi_load("lmao.jpg", &width, &height, &nr, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
@@ -167,6 +280,7 @@ void drawBoard (board b[]) {
   writeText("\n\nSCORE");
   glRasterPos2f(-0.25f+0.12f, 1.25f-0.10f);
   writeText("\n\n0 - 0");
+  glLoadIdentity();
   //drawCoordinatesSystem();
   glFlush();
   glutSwapBuffers();
@@ -174,11 +288,9 @@ void drawBoard (board b[]) {
 
 
 void onMouseClick (int btn, int state, int x, int y) {
-  printf("mouse %d %d %d %d\n", btn, state, x, y);
 }
 
 void reshape(int w, int h) {
-  printf("onWindowResize %d %d\n\n\n\n\n", w, h);
   windowWidth = w;
   windowHeight = h;
   glViewport(0, 0, w, h);
@@ -200,8 +312,7 @@ int mainLoop (int argc, char** argv){
   glutInitWindowSize(1000, 750);
   glutCreateWindow("Battleship la cel mai inalt nivel");
   
-  texDat = stbi_load("waterII.jpg", &width, &height, &nr, 0);
-  assert(texDat != NULL);
+  
 
   
   glGenTextures(1, &tex);

@@ -19,26 +19,29 @@ board b[2];
 
 FILE* pipe[4];
 
+bool lmao;
 
 
 void display() {
-	printf ("Player %d turn:\n", turn);
-	printf("display\n");
-	for (int i= 0; i < LENGTH; i++, printf("\n"))
-		for (int j = 0; j < 2 * WIDTH + 5; j++)
-		  if (j < WIDTH)
-		    cout << b[0].board[i][j];
-		  else if (j < WIDTH + 5)
-	      cout << " ";
-	    else 
-	    	cout << b[1].board[i][j - WIDTH - 5];
-	drawBoard(b);
+	//printf ("Player %d turn:\n", turn);
+	//printf("display\n");
+	//for (int i= 0; i < LENGTH; i++, printf("\n"))
+		//for (int j = 0; j < 2 * WIDTH + 5; j++)
+		  //if (j < WIDTH)
+		    //cout << b[0].board[i][j];
+		  //else if (j < WIDTH + 5)
+	      //cout << " ";
+	    //else 
+	    	//cout << b[1].board[i][j - WIDTH - 5];
+	drawBoard(b, lmao);
 	return;
 }
 bool drawCheck;
 
+int cnttt = 1;
+
 void nextmove () {
-  //printf("nextmove\n");
+  cnttt++;
   if (cnt[0] < 7 && cnt[1] < 7) {
 		//cout << "actually does something";
 		sendBoard(pipe[2 * turn], b[turn]);
@@ -56,11 +59,12 @@ void nextmove () {
 		else  {
 			b[turn].board[KinderBueno.x][KinderBueno.y] = MISS;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		turn = 1 - turn;
-		
+	  display();
   }
   else if (!drawCheck) {
+		//cout << "drawwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n";
 		drawCheck = 1;
 		if (turn == 1) {
 		  fwrite(&b[turn], sizeof(b[turn]), 1, pipe[2 * turn]);
@@ -80,8 +84,18 @@ void nextmove () {
 				b[turn].board[KinderBueno.x][KinderBueno.y] = MISS;
 			}
 		}
-	} 
-  display();
+		display();
+	}
+	else if (!lmao){
+		b[0].state = 1;
+		b[1].state = 1;
+		sendBoard(pipe[0], b[0]);
+		sendBoard(pipe[2], b[1]);
+		lmao = 1;
+	}
+	else
+	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 }
 
 
@@ -127,27 +141,6 @@ int main (int argc, char** argv) {
 	setFree(b[0]);
 	setFree(b[1]);
 	mainLoop(argc, argv);
- 	if (turn == 1) {
-		///caz de egalitate
-		
-		printf ("Player %d turn:\n", turn);
-	//	print(b);
-		std::this_thread::sleep_for(std::chrono::milliseconds(300));
-		system("clear");
-		printf("\n\n");
-	}
-	if (cnt[0] == 7 && cnt[1] == 7) {
-		cout << "DRAW!!\n\n\n\n";
-		//print(b);
-	}
-	else {
-		printf("WINNER IS PLAYER %d !!!\n\n", 1 - turn);
-		//print(b);
-	}
-	b[0].state = 1;
-	b[1].state = 1;
-	sendBoard(pipe[0], b[0]);
-	sendBoard(pipe[2], b[1]);
 	//cout << "server ends!";
   return 0;
 }

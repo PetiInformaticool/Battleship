@@ -2,7 +2,7 @@
 #include "game.h"
 
 
-void drawBoard(board b[]);
+void drawBoard(board b[], bool tristutz);
 
 void nextmove();
 

@@ -43,6 +43,7 @@ void reshape(int w, int h) {
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
+	getchar();
   glLoadIdentity();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -81,7 +82,7 @@ int main(int argc, char** argv)
 
     //create test checker image
     int width, height, nr;
-    unsigned char* texDat = stbi_load("download.jpg", &width, &height, &nr, 0);
+    unsigned char* texDat = stbi_load("lmao.jpg", &width, &height, &nr, 0);
     assert(texDat != NULL);
 
     //upload to GPU texture
