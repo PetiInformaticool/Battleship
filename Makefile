@@ -32,7 +32,7 @@ bin/player2.o: src/player2.cpp src/protocol.h src/game.h | bin
 	g++ -c src/player2.cpp -o bin/player2.o
 
 bin/server: bin/server.o  bin/viewer.o bin/game.o bin/protocol.o | bin
-	g++ bin/server.o bin/viewer.o bin/game.o bin/protocol.o  -lglut -lGL -lGLEW -o bin/server
+	g++ bin/server.o bin/viewer.o bin/game.o bin/protocol.o  -lglut -lGL -o bin/server
 
 bin/player: bin/player.o bin/game.o bin/protocol.o | bin
 	g++ bin/player.o bin/game.o bin/protocol.o -o bin/player
@@ -50,6 +50,6 @@ kill:
 clean:
 	rm bin -R
 	
-run: bin/server bin/player bin/player2 | bin pipes/playerX pipes/player0 pipes/server0 pipes/serverX
+run: bin/server bin/player bin/player2  | bin pipes/playerX pipes/player0 pipes/server0 pipes/serverX
 	 bin/server & bin/player & bin/player2 & wait
 
