@@ -23,17 +23,17 @@ bool lmao;
 
 
 void display() {
-	//printf ("Player %d turn:\n", turn);
+	printf ("Player %d turn:\n", turn);
 	//printf("display\n");
-	//for (int i= 0; i < LENGTH; i++, printf("\n"))
-		//for (int j = 0; j < 2 * WIDTH + 5; j++)
-		  //if (j < WIDTH)
-		    //cout << b[0].board[i][j];
-		  //else if (j < WIDTH + 5)
-	      //cout << " ";
-	    //else 
-	    	//cout << b[1].board[i][j - WIDTH - 5];
-	drawBoard(b, lmao);
+	for (int i= 0; i < LENGTH; i++, printf("\n"))
+		for (int j = 0; j < 2 * WIDTH + 5; j++)
+		  if (j < WIDTH)
+		    cout << b[0].board[i][j];
+		  else if (j < WIDTH + 5)
+	      cout << " ";
+	    else 
+	    	cout << b[1].board[i][j - WIDTH - 5];
+	drawBoard(b, cnt);
 	return;
 }
 bool drawCheck;
@@ -59,7 +59,7 @@ void nextmove () {
 		else  {
 			b[turn].board[KinderBueno.x][KinderBueno.y] = MISS;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		turn = 1 - turn;
 	  display();
   }

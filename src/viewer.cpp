@@ -133,7 +133,7 @@ void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
 		}
 }
 
-void drawBoard (board b[], bool tristutz) {
+void drawBoard (board b[], int cnt[]) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
   glLoadIdentity();
@@ -244,6 +244,8 @@ void drawBoard (board b[], bool tristutz) {
 			int i = y1;
 			int j = 10 - x1 - 1;
 			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+						glScalef((y2 - y1 + 1) / 2.0f , 1.0f, 1.0f);
+
 			//printf("%c &d\n", l, y2 - y1  + 1);
 			drawBoat();
 			glLoadIdentity();
@@ -269,8 +271,8 @@ void drawBoard (board b[], bool tristutz) {
   glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex2f(-1.0f-1.75f+0.25f, 1.75+0.50f-1.5f);
     glTexCoord2f(0, 1); glVertex2f(-1.0f-1.75f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(10, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(10, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.5f);
+    glTexCoord2f(7, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
+    glTexCoord2f(7, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.5f);
 	  //drawRect(-1.0f-1.75f, 1.75f+0.50f, 1.0f+1.25f, 2.50f+0.25f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -279,8 +281,15 @@ void drawBoard (board b[], bool tristutz) {
   glRasterPos2f(-0.25f+0.05f, 1.25f+0.10f);
   writeText("\n\nSCORE");
   glRasterPos2f(-0.25f+0.12f, 1.25f-0.10f);
-  writeText("\n\n0 - 0");
+	char scor[6];
+	scor[0] = '\n';
+	scor[1] = '\n';
+	scor[2] = cnt[0] + '0';
+	scor[3] = '-';
+	scor[4] = cnt[1] + '0';
   glLoadIdentity();
+  	writeText(scor);
+
   //drawCoordinatesSystem();
   glFlush();
   glutSwapBuffers();
