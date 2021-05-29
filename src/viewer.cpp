@@ -263,16 +263,16 @@ void drawBoard (board b[], int cnt[]) {
 		}
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	texDat = stbi_load("lmao.jpg", &width, &height, &nr, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
+	texDat = stbi_load("poza.bmp", &width, &height, &nr, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texDat);
 	glLoadIdentity();
   glEnable(GL_TEXTURE_2D);
   glColor3f(1.f, 1.f, 1.f);
   glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex2f(-1.0f-1.75f+0.25f, 1.75+0.50f-1.5f);
     glTexCoord2f(0, 1); glVertex2f(-1.0f-1.75f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(7, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(7, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.5f);
+    glTexCoord2f(1, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
+    glTexCoord2f(1, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.5f);
 	  //drawRect(-1.0f-1.75f, 1.75f+0.50f, 1.0f+1.25f, 2.50f+0.25f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -281,16 +281,20 @@ void drawBoard (board b[], int cnt[]) {
   glRasterPos2f(-0.25f+0.05f, 1.25f+0.10f);
   writeText("\n\nSCORE");
   glRasterPos2f(-0.25f+0.12f, 1.25f-0.10f);
-	char scor[6];
+	char scor[8];
 	scor[0] = '\n';
 	scor[1] = '\n';
 	scor[2] = cnt[0] + '0';
-	scor[3] = '-';
-	scor[4] = cnt[1] + '0';
+	scor[3] =' ';
+	scor[4] = '-';
+	scor[5] = ' ';
+	scor[6] = cnt[1] + '0';
   glLoadIdentity();
-  	writeText(scor);
-
-  //drawCoordinatesSystem();
+  writeText(scor);
+  glRasterPos2f(-1.40f, 1.f);
+	writeText("Player 1");
+	glRasterPos2f(1.15f, 1.f);
+	writeText("Player 2");
   glFlush();
   glutSwapBuffers();
 }
