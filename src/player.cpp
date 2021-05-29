@@ -38,7 +38,7 @@ pair < int, int > partial(char b[][WIDTH]) {
 						int _j = j + dc[k];
 						if (_i < 0 || _i >= LENGTH || _j < 0 || _j >= WIDTH) 
 							continue;
-						if (b[_i][_j] == FREE) 
+						if (b[_i][_j] == FREE && !vecin(_i, _j, b)) 
 							return {_i, _j};
 					}
 				}
@@ -48,7 +48,7 @@ pair < int, int > partial(char b[][WIDTH]) {
 						int _j = j + dc[k];
 						if (_i < 0 || _i >= LENGTH || _j < 0 || _j >= WIDTH) 
 							continue;
-						if (b[_i][_j] == FREE) 
+						if (b[_i][_j] == FREE && !vecin(_i, _j, b)) 
 							return {_i, _j};
 					}
 				}

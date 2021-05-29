@@ -59,7 +59,7 @@ void nextmove () {
 		else  {
 			b[turn].board[KinderBueno.x][KinderBueno.y] = MISS;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		turn = 1 - turn;
 	  display();
   }
