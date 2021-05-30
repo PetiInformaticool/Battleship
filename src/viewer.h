@@ -2,7 +2,7 @@
 #include "game.h"
 
 
-void drawBoard(board b[], int cnt[]);
+void drawBoard(board b[], int cnt[], Player2 Move, int turn, int type);
 
 void nextmove();
 

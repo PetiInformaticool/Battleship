@@ -11,12 +11,38 @@ int windowHeight, windowWidth;
 
     GLuint tex;
     
+ const float PI = 4 * atan(1);
+    
 void writeText(const char* string) {
 	glColor3f(1.0f, 1.0f, 1.0f);
   glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)string);
 }
 
-   void drawRect (float x1, float y1, float x2, float y2) {
+void drawRegPoly(float x, float y, float r, int edges) {
+	glScalef((GLfloat)1.0/9.0, (GLfloat)1.0/9.0, 1.0);
+	glColor4f(0.0, 0.5, 0.0, 0.0);
+	glLineWidth(1.0f);
+  glBegin(GL_POLYGON);
+  for (int i = 0; i < edges; i++) {
+	  float phi = i * 2.0f * PI / edges;
+	  glVertex2f(x + r* cos(phi), y + r * sin(phi));
+	}
+	glEnd();
+  for (int i = 0; i < edges; i += 50) {
+		glBegin(GL_POLYGON);
+			float phi;
+			phi = (i + 16) * 2.0f * PI / edges;
+			glVertex2f(x + r * cos(phi), y + r * sin(phi));
+			phi = (i + 34) * 2.0f * PI / edges;
+			glVertex2f(x + r * cos(phi), y + r * sin(phi));
+			phi = (i + 25) * 2.0f * PI / edges;
+			glVertex2f(x + (r + 2  * r / 3) * cos(phi), y + (r + 2 * r / 3) * sin(phi));
+		glEnd();
+		
+	}
+}
+
+void drawRect (float x1, float y1, float x2, float y2) {
   glBegin(GL_POLYGON);
     glVertex2f(x1, y1);
     glVertex2f(x1, y2);
@@ -43,28 +69,10 @@ void reshape(int w, int h) {
 
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	getchar();
-  glLoadIdentity();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	 //printf("display\n");
-	 	 //glColor3f(1.0f, 1.f, 0.f);
-
-	 glBindTexture(GL_TEXTURE_2D, tex);
-    glEnable(GL_TEXTURE_2D);
-   glBegin(GL_QUADS);
-    glTexCoord2i(0, 0); glVertex2i(100, 100);
-    glTexCoord2i(0, 1); glVertex2i(100, 500);
-    glTexCoord2i(1, 1); glVertex2i(500, 500);
-    glTexCoord2i(1, 0); glVertex2i(500, 100);
-		 glEnd();
-		glDisable(GL_TEXTURE_2D);
-	 //drawRect(100.0, 100.0, 500.0, 500.0);
-	 glColor3f(0.0f, 1.0f, 1.0f);
-	  glRasterPos2f(200.0, 200.0);
-	  writeText("mori");
-	 glFlush();
-   glutSwapBuffers();
+	glLoadIdentity();
+	drawRegPoly(0.0, 0.0, 1.0, 400);
+	glFlush();
+  glutSwapBuffers();
 }
 
 
@@ -81,7 +89,7 @@ int main(int argc, char** argv)
     glutCreateWindow("windowname");
 
     //create test checker image
-    int width, height, nr;
+    /*int width, height, nr;
     unsigned char* texDat = stbi_load("lmao.jpg", &width, &height, &nr, 0);
     assert(texDat != NULL);
 
@@ -93,20 +101,14 @@ int main(int argc, char** argv)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);*/
 
     //match projection to window resolution (could be in reshape callback)
 		//glutReshapeFunc(reshape);
-    glutIdleFunc(nextmove);
+    glutReshapeFunc(reshape);
+		glutIdleFunc(nextmove);
 		glutDisplayFunc(display);
-		glMatrixMode(GL_PROJECTION);
-    glOrtho(0, 800, 0, 600, -1, 1);
-    glMatrixMode(GL_MODELVIEW);
-		
-		glClear(GL_COLOR_BUFFER_BIT);
-    
-		 glFlush();
-		 //getchar();
+    		 //getchar();
 		//return 0;
 
     //clear and draw quad with texture (could be in display callback)

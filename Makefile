@@ -40,7 +40,7 @@ bin/player: bin/player.o bin/game.o bin/protocol.o | bin
 bin/player2: bin/player2.o bin/game.o bin/protocol.o | bin
 	g++ bin/player2.o bin/game.o bin/protocol.o -o bin/player2
 bin/texture: src/texture.cpp
-	g++  src/texture.cpp -lglut -lGL -lGLU -lGLEW -lglfw -ldl  -o bin/texture 
+	g++  src/texture.cpp -lglut -lGL -o bin/texture 
 
 kill: 
 	killall server & wait

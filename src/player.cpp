@@ -11,7 +11,7 @@ bool vecin(int i, int j, char b[][WIDTH]) {
 		int _j = j + dc[k];
 		if (_i < 0 || _i >= LENGTH || _j < 0 || _j >= WIDTH) 
 			continue;
-		if (b[_i][_j] >= '0' && b[_i][_j] < '9')
+		if (b[_i][_j] >= '0' && b[_i][_j] <= '9')
 			return 1;	
 	}
 	return 0;
@@ -64,7 +64,7 @@ int main () {
 	pipe[0] = fopen("pipes/serverX", "rb");
 	pipe[1] = fopen("pipes/playerX", "wb");
 	board b;
-	int ships[]= {0, 0, 3, 2, 1, 1};
+	int ships[]= {0, 0, 3, 2, 1, 4};
 	while (1) {
 		b = getBoard(pipe[0]);
 		if (b.state == 1) {

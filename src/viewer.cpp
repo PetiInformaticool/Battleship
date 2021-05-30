@@ -8,9 +8,13 @@
 #include <GL/glut.h>
 #define STB_IMAGE_IMPLEMENTATION
    #include "stb_image.h"
+#include <thread>
+#include <chrono>
 
 
 using namespace std;
+
+float coordx, coordy;
 
 const float PI = 4 * atan(1);
 
@@ -25,7 +29,8 @@ void writeText(const char* string) {
 }
 
 void drawRegPoly(float x, float y, float r, int edges) {
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(1.0f);
   glBegin(GL_LINE_LOOP);
   for (int i = 0; i < edges; i++) {
 	  float phi = i * 2.0f * PI / edges;
@@ -68,6 +73,7 @@ void drawCoordinatesSystem() {
 }
 
 void drawBoat() {
+	glScalef(10.0/15, 10.0/15, 1.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glColor3f(0.2f, 0.2f, 0.2f);
   glBegin(GL_POLYGON); 
@@ -92,8 +98,10 @@ void drawBoat() {
     glVertex2f(0.32, 0.145);
     glVertex2f(0.34, 0.10);
   glEnd();
+  glLoadIdentity();
 }
 void drawBoat2() {
+  glScalef(10.0/15, 10.0/15, 1.0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glColor3f(0.2f, 0.2f, 0.2f);
   glBegin(GL_POLYGON); 
@@ -117,12 +125,38 @@ void drawBoat2() {
     glVertex2f(0.145, 0.32);
     glVertex2f(0.10, 0.34);
   glEnd();
+  glLoadIdentity();
+}
+
+
+void drawBomb(float x, float y, float r, int edges) {
+	glScalef((GLfloat)1.0/9.0, (GLfloat)1.0/9.0, 1.0);
+	glColor4f(0.0, 0.5, 0.0, 0.0);
+	glLineWidth(1.0f);
+  glBegin(GL_POLYGON);
+  for (int i = 0; i < edges; i++) {
+	  float phi = i * 2.0f * PI / edges;
+	  glVertex2f(x + r* cos(phi), y + r * sin(phi));
+	}
+	glEnd();
+  for (int i = 0; i < edges; i += 50) {
+		glBegin(GL_POLYGON);
+			float phi;
+			phi = (i + 16) * 2.0f * PI / edges;
+			glVertex2f(x + r * cos(phi), y + r * sin(phi));
+			phi = (i + 34) * 2.0f * PI / edges;
+			glVertex2f(x + r * cos(phi), y + r * sin(phi));
+			phi = (i + 25) * 2.0f * PI / edges;
+			glVertex2f(x + (r + 2  * r / 3) * cos(phi), y + (r + 2 * r / 3) * sin(phi));
+		glEnd();
+		
+	}
 }
 
 void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
   x1 = -1;
-  for (int i = 0; i < 10; i++)
-    for (int j = 0; j < 10; j++) {
+  for (int i = 0; i < 15; i++)
+    for (int j = 0; j < 15; j++) {
 			if (b.board[i][j]==l) {
 				if (x1 == -1) {
 					x1 = i, y1 = j;
@@ -133,117 +167,148 @@ void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
 		}
 }
 
-void drawBoard (board b[], int cnt[]) {
+void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 	glClear(GL_COLOR_BUFFER_BIT);
-	
   glLoadIdentity();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  float x = 1.0, y = 1.0;
 	glColor3f(1.0f, 1.0f, 1.0f);
   texDat = stbi_load("water-texture-breeze\ (1).jpg", &width, &height, &nr, 0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-  glEnable(GL_TEXTURE_2D);
- glBegin(GL_QUADS);
+	glScalef(x, y, 1.0);
+	glEnable(GL_TEXTURE_2D);
+	glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex2f(-2.50f, 0.75f);
     glTexCoord2f(0, 1); glVertex2f(-2.50f, -1.75f);
     glTexCoord2f(1, 1); glVertex2f(2.50f, -1.75f);
     glTexCoord2f(1, 0); glVertex2f(2.50f, 0.75f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glLoadIdentity();
 	//drawRect(-2.50f, 0.75f, 2.50f, -1.75f);
   glColor3f(1.0f, 1.0f, 1.0f);
   glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
-	for (int i = 0; i < 10; i++)
-		for (int j = 0; j < 10; j++) {
+  glScalef(x, y, 1.0);
+	for (int i = 0; i < 15; i++)
+		for (int j = 0; j < 15; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glLineWidth(3.0f);
 			glBegin(GL_POLYGON);
-				glVertex2f(2.0f * i / 10, 2.0f * j / 10);
-				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * j / 10);
-				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * (j + 1.0f) / 10);
-				glVertex2f(2.0f * i / 10, 2.0f * (j + 1.0f) / 10);
+				glVertex2f(2.0f * i / 15, 2.0f * j / 15);
+				glVertex2f(2.0f * (i + 1.0f) / 15, 2.0f * j / 15);
+				glVertex2f(2.0f * (i + 1.0f) / 15, 2.0f * (j + 1.0f) / 15);
+				glVertex2f(2.0f * i / 15, 2.0f * (j + 1.0f) / 15);
 			glEnd();
 		}
-	for (int i = 0; i < 10; i++)
-	  for (int j = 0; j < 10; j++) {
-			int x = 10 - j - 1;
+  glScalef(x, y, 1.0);
+  cout << Move.x << " " << Move.y << "\n"; 
+  if (turn == 1 && Move.x != -1 && type == 1) {
+		for (int i = 0; i < 15; i++)
+		  for (int j = 0; j < 15; j++)
+		    if (15 - j - 1 == Move.x && i == Move.y) {
+					drawRegPoly(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 1.0/15, 50);
+					drawLine(2.0 * i / 15 + 1.0/15, 0, 2.0 * i / 15+1.0/15, 2.0);
+					drawLine(0, 2.0 * j / 15 + 1.0/15, 2, 2.0 * j / 15  + 1.0/15);
+				}
+	  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	for (int i = 0; i < 15; i++)
+	  for (int j = 0; j < 15; j++) {
+			int x = 15 - j - 1;
 			int y = i;
 			if (b[0].board[x][y] == FREE);
+			if (turn == 1 && type && 15 - j - 1 == Move.x && i== Move.y)
+			  continue;
 			else if (b[0].board[x][y] == 'X') {
-				glColor3f(0.7, 0.0, 0.0);
+				glColor3f(0.8, 0.0, 0.0);
 				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * (j + 1.0f) / 10-0.02, 2.f * i / 10+0.02, 2.f * j / 10+0.02);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
 			}
 			else if (b[0].board[x][y] == '*') {
 				glColor3f(0.2f, 0.2f, 0.2f);
 				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * (j + 1.0f) / 10-0.02, 2.f * i / 10+0.02, 2.f * j / 10+0.02);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
 			}
  		}
- 	for (char l = '0'; l < '7'; l++) {
+ 	
+ 	for (char l = '0'; l <= '9'; l++) {
 		int x1, y1, x2, y2;
 		findBoat(b[0], l, x1, y1, x2, y2);
 		if (x1 == x2 && x1 != -1) {
 			int i = y1;
-			int j = 10 - x1 - 1;
-			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			int j = 15 - x1 - 1;
+			glTranslatef(2.0f * i / 15, 2.0f * j / 15, 0.0f); 
 			glScalef((y2 - y1 + 1) / 2.0f , 1.0f, 1.0f);
 			drawBoat();
 			glLoadIdentity();
 			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
-			//glScalef(1.0f, 1.0f, 1.0f);
+			glScalef(x, y, 1.0);
 		}
 		if (y1 == y2 && x1 != -1) {
 			int i = y2;
-			int j = 10 - x2 - 1;
-			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			int j = 15 - x2 - 1;
+			glTranslatef(2.0f * i / 15, 2.0f * j / 15, 0.0f); 
 			glScalef(1.0f, (x2 - x1 + 1) / 2.0f, 1.0f);
 			drawBoat2();
 			glLoadIdentity();
 			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
+			glScalef(x, y, 1.0);
 		}
 	}
 	glLoadIdentity();
 	glTranslatef(0.5f-0.25f, -1.5f, 0.0);
-	for (int i = 0; i < 10; i++)
-		for (int j = 0; j < 10; j++) {
+	for (int i = 0; i < 15; i++)
+		for (int j = 0; j < 15; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glLineWidth(3.0f);
 			glBegin(GL_POLYGON);
-				glVertex2f(2.0f * i / 10, 2.0f * j / 10);
-				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * j / 10);
-				glVertex2f(2.0f * (i + 1.0f) / 10, 2.0f * (j + 1.0f) / 10);
-				glVertex2f(2.0f * i / 10, 2.0f * (j + 1.0f) / 10);
+				glVertex2f(2.0f * i / 15, 2.0f * j / 15);
+				glVertex2f(2.0f * (i + 1.0f) / 15, 2.0f * j / 15);
+				glVertex2f(2.0f * (i + 1.0f) / 15, 2.0f * (j + 1.0f) / 15);
+				glVertex2f(2.0f * i / 15, 2.0f * (j + 1.0f) / 15);
 			glEnd();
 		}
-	for (int i = 0; i < 10; i++)
-	  for (int j = 0; j < 10; j++) {
-			int x = 10 - j - 1;
+	if (turn == 0 && Move.x != -1 && type == 1) {
+		for (int i = 0; i < 15; i++)
+		  for (int j = 0; j < 15; j++)
+		    if (15 - j - 1 == Move.x && i == Move.y) {
+					drawRegPoly(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 1.0/15, 50);
+					drawLine(2.0 * i / 15 + 1.0/15, 0, 2.0 * i / 15+1.0/15, 2.0);
+					drawLine(0, 2.0 * j / 15 + 1.0/15, 2, 2.0 * j / 15  + 1.0/15);
+				}
+	  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+	for (int i = 0; i < 15; i++)
+	  for (int j = 0; j < 15; j++) {
+			int x = 15 - j - 1;
 			int y = i;
+		  if (turn == 0 && type && 15 - j - 1 == Move.x && i== Move.y)
+			  continue;
 			if (b[1].board[x][y] == FREE);
 			else if (b[1].board[x][y] == 'X') {
 				glColor3f(0.7, 0.0, 0.0);
 				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * (j + 1.0f) / 10-0.02, 2.f * i / 10+0.02, 2.f * j / 10+0.02);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
 			}
 			else if (b[1].board[x][y] == '*') {
 				glColor3f(0.2f, 0.2f, 0.2f);
 				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * (j + 1.0f) / 10-0.02, 2.f * i / 10+0.02, 2.f * j / 10+0.02);
-				drawLine(2.f * (i + 1.0f) / 10-0.02, 2.f * j / 10+0.02, 2.f * i / 10+0.02, 2.f * (j + 1.0f) / 10-0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
+				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
 			}
  		}
- 	for (char l = '0'; l < '7'; l++) {
+ 	for (char l = '0'; l <= '9'; l++) {
 		int x1, y1, x2, y2;
 		findBoat(b[1], l, x1, y1, x2, y2);
 		if (x1 == x2 && x1 != -1) {
 			int i = y1;
-			int j = 10 - x1 - 1;
-			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			int j = 15 - x1 - 1;
+			glTranslatef(2.0f * i / 15, 2.0f * j / 15, 0.0f); 
 						glScalef((y2 - y1 + 1) / 2.0f , 1.0f, 1.0f);
 
 			//printf("%c &d\n", l, y2 - y1  + 1);
@@ -254,8 +319,8 @@ void drawBoard (board b[], int cnt[]) {
 		}
 		if (y1 == y2 && x1 != -1) {
 			int i = y2;
-			int j = 10 - x2 - 1;
-			glTranslatef(2.0f * i / 10, 2.0f * j / 10, 0.0f); 
+			int j = 15 - x2 - 1;
+			glTranslatef(2.0f * i / 15, 2.0f * j / 15, 0.0f); 
 			glScalef(1.0f, (x2 - x1 + 1) / 2.0f, 1.0f);
 			drawBoat2();
 			glLoadIdentity();
@@ -276,6 +341,7 @@ void drawBoard (board b[], int cnt[]) {
 	  //drawRect(-1.0f-1.75f, 1.75f+0.50f, 1.0f+1.25f, 2.50f+0.25f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	drawCoordinatesSystem();
 	glLoadIdentity();
 	glColor3f(1.0f, 1.0f, 1.0f);
   glRasterPos2f(-0.25f+0.05f, 1.25f+0.10f);
@@ -309,12 +375,17 @@ void reshape(int w, int h) {
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  if (w <= h)
+  //glOrtho(-2.7, 2.7, -2.0, 2.0, -10.0, 10.0);
+	if (w <= h)
     glOrtho(-2.0, 2.0, -2.0 * (GLfloat) h / (GLfloat) w,
       2.0 * (GLfloat) h / (GLfloat) w, -10.0, 10.0);
-  else
-    glOrtho(-2.0 * (GLfloat) w / (GLfloat) h,
+  else {
+		//cout << "salllllll\n\n\n";
+		coordx = 4* (GLfloat) w / (GLfloat) h;
+		coordy = 4;
+		glOrtho(-2.0 * (GLfloat) w / (GLfloat) h,
       2.0 * (GLfloat) w / (GLfloat) h, -2.0, 2.0, -10.0, 10.0);
+	}
   glMatrixMode(GL_MODELVIEW);
 }
 

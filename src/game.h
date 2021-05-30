@@ -6,8 +6,8 @@ const char SHIP = '*';
 
 const bool PLACE = 0;
 const bool DESTROY = 1;
-const int LENGTH = 10;
-const int WIDTH = 10;
+const int LENGTH = 15;
+const int WIDTH = 15;
 const char HIT = 'X';
 const char MISS = '*';
 

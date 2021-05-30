@@ -11,15 +11,17 @@ using namespace std;
 
 
 board Fleet[2];
-Player2 KinderBueno;
+Player2 KinderBueno = {-1, -1};
 int turn;
 
-int len[2][10], cnt[2];
+int len[2][15], cnt[2];
 board b[2];
 
 FILE* pipe[4];
 
 bool lmao;
+
+int type = 1;
 
 
 void display() {
@@ -33,22 +35,24 @@ void display() {
 	      cout << " ";
 	    else 
 	    	cout << b[1].board[i][j - WIDTH - 5];
-	drawBoard(b, cnt);
+	drawBoard(b, cnt, KinderBueno, turn, type);
 	return;
 }
 bool drawCheck;
+
 
 int cnttt = 1;
 
 void nextmove () {
   cnttt++;
-  if (cnt[0] < 7 && cnt[1] < 7) {
+  if (cnt[0] < 10 && cnt[1] < 10) {
 		//cout << "actually does something";
 		sendBoard(pipe[2 * turn], b[turn]);
 		fread(&KinderBueno, sizeof(KinderBueno), 1, pipe[1+2*turn]);
 		if (Fleet[1 - turn].board[KinderBueno.x][KinderBueno.y] != FREE) {
 			int id = Fleet[1 - turn].board[KinderBueno.x][KinderBueno.y] - '0';
 			len[1 - turn][id]--;
+			cout << KinderBueno.x << " " << KinderBueno.y << "\n";
 			if (len[1 - turn][id] == 0) {
 				discoverShip(b[turn], Fleet[1 - turn], id);
 				cnt[turn]++;
@@ -58,10 +62,14 @@ void nextmove () {
 		}
 		else  {
 			b[turn].board[KinderBueno.x][KinderBueno.y] = MISS;
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
 		turn = 1 - turn;
-	  display();
+		type = 1;
+		display();
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		type = 0;
+		display();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   }
   else if (!drawCheck) {
 		//cout << "drawwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n";
@@ -109,7 +117,7 @@ int main (int argc, char** argv) {
 	pipe[1] = fopen("pipes/playerX", "rb");
 	pipe[2] = fopen("pipes/server0", "wb");
 	pipe[3] = fopen("pipes/player0", "rb");
-	short ships[2][6] = {{0, 0, 3, 2, 1, 1}, {0, 0, 3, 2, 1, 1}};
+	short ships[2][6] = {{0, 0, 3, 2, 1, 4}, {0, 0, 3, 2, 1, 4}};
 	setFree(b[0]);
 	setFree(b[1]);
 	char* ch = "0123456789";
