@@ -7,7 +7,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #define STB_IMAGE_IMPLEMENTATION
-   #include "stb_image.h"
+#include "stb_image.h"
 #include <thread>
 #include <chrono>
 
@@ -19,10 +19,36 @@ float coordx, coordy;
 const float PI = 4 * atan(1);
 
 int windowHeight, windowWidth;
+
+struct Picture {
   int width, height, nr;
   unsigned char* texDat;
- GLuint tex;
+  GLuint tex;
+};
 
+Picture header;
+Picture water;
+
+Picture loadTexture(char* path) {
+  Picture p;
+  p.texDat = stbi_load(path, &p.width, &p.height, &p.nr, 0);
+  glGenTextures(1, &p.tex);
+  glBindTexture(GL_TEXTURE_2D, p.tex);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  int channels;
+  if (p.nr == 4) {
+    channels = GL_RGBA;
+  } else if (p.nr == 3) {
+    channels = GL_RGB;
+  } else {
+    assert(false);
+  }
+	glTexImage2D(GL_TEXTURE_2D, 0, channels, p.width, p.height, 0, channels, GL_UNSIGNED_BYTE, p.texDat);
+  return p;
+}
 
 void writeText(const char* string) {
   glutBitmapString(GLUT_BITMAP_TIMES_ROMAN_24, (const unsigned char*)string);
@@ -173,15 +199,13 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   float x = 1.0, y = 1.0;
 	glColor3f(1.0f, 1.0f, 1.0f);
-  texDat = stbi_load("water-texture-breeze\ (1).jpg", &width, &height, &nr, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-	glScalef(x, y, 1.0);
-	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(-2.50f, 0.75f);
+  glBindTexture(GL_TEXTURE_2D, water.tex);
+  glEnable(GL_TEXTURE_2D);
+  glBegin(GL_POLYGON);
+    glTexCoord2f(0, 0); glVertex2f(-2.50f,  0.75f);
     glTexCoord2f(0, 1); glVertex2f(-2.50f, -1.75f);
-    glTexCoord2f(1, 1); glVertex2f(2.50f, -1.75f);
-    glTexCoord2f(1, 0); glVertex2f(2.50f, 0.75f);
+    glTexCoord2f(1, 1); glVertex2f( 2.50f, -1.75f);
+    glTexCoord2f(1, 0); glVertex2f( 2.50f,  0.75f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glLoadIdentity();
@@ -328,8 +352,7 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 		}
 	}
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	texDat = stbi_load("poza.bmp", &width, &height, &nr, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texDat);
+  glBindTexture(GL_TEXTURE_2D, header.tex);
 	glLoadIdentity();
   glEnable(GL_TEXTURE_2D);
   glColor3f(1.f, 1.f, 1.f);
@@ -337,7 +360,7 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 		glTexCoord2f(0, 0); glVertex2f(-1.0f-1.75f+0.25f, 1.75+0.50f-1.5f);
     glTexCoord2f(0, 1); glVertex2f(-1.0f-1.75f+0.25f, 2.50+0.25-1.5f);
     glTexCoord2f(1, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(1, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.5f);
+    glTexCoord2f(1, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.50f);
 	  //drawRect(-1.0f-1.75f, 1.75f+0.50f, 1.0f+1.25f, 2.50f+0.25f);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -377,7 +400,7 @@ void reshape(int w, int h) {
   glLoadIdentity();
   //glOrtho(-2.7, 2.7, -2.0, 2.0, -10.0, 10.0);
 	if (w <= h)
-    glOrtho(-2.5, 2.5, -2.0 * (GLfloat) h / (GLfloat) w,
+    glOrtho(-2.0, 2.0, -2.0 * (GLfloat) h / (GLfloat) w,
       2.0 * (GLfloat) h / (GLfloat) w, -10.0, 10.0);
   else {
 		//cout << "salllllll\n\n\n";
@@ -395,18 +418,9 @@ int mainLoop (int argc, char** argv){
   glutInitDisplayMode(GLUT_RGB);
   glutInitWindowSize(1000, 750);
   glutCreateWindow("Battleship la cel mai inalt nivel");
-  
-  
 
-  
-  glGenTextures(1, &tex);
-  glBindTexture(GL_TEXTURE_2D, tex);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-  
+  header = loadTexture("poza.bmp");
+  water = loadTexture("water-texture-breeze (1).jpg");
   
   glutReshapeFunc(reshape);
   glutIdleFunc(nextmove);

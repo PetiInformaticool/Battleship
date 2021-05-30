@@ -89,10 +89,10 @@ int main(int argc, char** argv)
     glutCreateWindow("windowname");
 
     //create test checker image
-    /*int width, height, nr;
-    unsigned char* texDat = stbi_load("lmao.jpg", &width, &height, &nr, 0);
+    int width, height, nr;
+    unsigned char* texDat = stbi_load("water-texture-breeze\ (1).jpg", &width, &height, &nr, 0);
     assert(texDat != NULL);
-
+		printf("%d", nr);
     //upload to GPU texture
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -101,7 +101,8 @@ int main(int argc, char** argv)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-    glBindTexture(GL_TEXTURE_2D, 0);*/
+    glBindTexture(GL_TEXTURE_2D, 0);
+    
 
     //match projection to window resolution (could be in reshape callback)
 		//glutReshapeFunc(reshape);
