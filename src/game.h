@@ -29,7 +29,7 @@ struct Player2 {
   int x, y;
 };
 
-bool placeShip (board &b, const Player1 a, short ships[], char ch);
+bool placeShip (board &b, const Player1 a, int ships[], char ch);
 
 void discoverShip(board &b, const board Fleet, int id);
 

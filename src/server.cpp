@@ -46,6 +46,9 @@ void display() {
 	return;
 }
 
+	int ships[2][10] = {{0, 0, 3, 3, 2, 2, 0, 0, 0, 0}, {0, 0, 3, 3, 2, 2, 0, 0, 0, 0}};
+
+
 void schema (int turn, Player2 KinderBueno) {
 	if (b[turn].board[KinderBueno.x][KinderBueno.y] != '.')
 	  return;
@@ -68,10 +71,20 @@ void schema (int turn, Player2 KinderBueno) {
 bool drawCheck;
 
 bool sendSmecherie(int turn) {
+	fflush(pipe[turn]);
+	cout << turn << "\n";
   bool ok = sendBoard(pipe[2*turn], b[turn])
 			| sendShips(pipe[2 * turn], killed[turn])
 			| sendBomb(pipe[2 * turn], bomb[turn]);
   fflush(pipe[turn]);
+  return ok;
+}
+bool sendSmecherie2(int turn) {
+  bool ok = sendBoard(pipe[2*turn], b[turn])
+			| sendShips(pipe[2 * turn], ships[turn])
+			| sendBomb(pipe[2 * turn], bomb[turn]);
+  fflush(pipe[turn]);
+  assert(ok);
   return ok;
 }
 int given[2][2];
@@ -92,6 +105,13 @@ void nextmove () {
 		}
 		fread(&KinderBueno, sizeof(KinderBueno), 1, pipe[1+2*turn]);
 		if (KinderBueno.type == 1) {
+			if (b[turn].board[KinderBueno.x][KinderBueno.y] != '.') {
+			  cout << "Winner is player " << 2 - turn << " ";
+				b[0].state = 1;
+				b[1].state = 1;
+				sendSmecherie(0);
+				sendSmecherie(1);
+			}
 			schema (turn, KinderBueno);
 		}
 		if (KinderBueno.type == 2) {
@@ -148,10 +168,10 @@ void nextmove () {
 		turn = 1 - turn;
 		type = 1;
 		display();
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 		type = 0;
 		display();
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   else if (!drawCheck) {
 		//cout << "drawwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n";
@@ -195,7 +215,7 @@ void nextmove () {
 }
 
 
-int sum (short ship[]) {
+int sum (int ship[]) {
   return ship[2] + ship[3] + ship[4] + ship[5];
 }
 
@@ -205,7 +225,6 @@ int main (int argc, char** argv) {
 	pipe[1] = fopen("pipes/playerX", "rb");
 	pipe[2] = fopen("pipes/server0", "wb");
 	pipe[3] = fopen("pipes/player0", "rb");
-	short ships[2][6] = {{0, 0, 3, 3, 2, 2}, {0, 0, 3, 3, 2, 2}};
 	setFree(b[0]);
 	setFree(b[1]);
 	bomb[0][1] = bomb[1][1] = 3;
@@ -213,10 +232,16 @@ int main (int argc, char** argv) {
   int nr[2] = {0, 0};
   int turn = 0;
 	while (sum(ships[0]) + sum(ships[1])) {
-		sendBoard(pipe[2 * turn], b[turn]);
+		assert(sendSmecherie2(turn));
 		while (1){
 			Player1 x = {0, 0, 0, 1};
 			fread(&x, sizeof(x), 1, pipe[2 * turn + 1]);
+			if (ships[turn][x.len] == 0) {
+				b[0].state = 2;
+				b[1].state = 2;
+				sendSmecherie(0);
+				sendSmecherie(1);
+			}
 			int moveState = placeShip(b[turn], x, ships[turn], ch[nr[turn]]);
 			fwrite(&moveState, sizeof(moveState), 1, pipe[2 * turn + 0]);
 			fflush(pipe[2 * turn + 0]);
@@ -230,14 +255,24 @@ int main (int argc, char** argv) {
 		nr[turn]++;
 		turn = 1 - turn;
 	}
+	cout << turn << "\n";
 	b[0].state = 1;
 	b[1].state = 1;
-	sendBoard(pipe[0], b[0]);
-	sendBoard(pipe[2], b[1]);
+	sendSmecherie2(0);
+	sendSmecherie2(1);
 	Fleet[0] = b[0];
 	Fleet[1] = b[1];
+	
 	setFree(b[0]);
 	setFree(b[1]);
+		for (int i= 0; i < LENGTH; i++, printf("\n"))
+		for (int j = 0; j < 2 * WIDTH + 5; j++)
+		  if (j < WIDTH)
+		    cout << Fleet[0].board[i][j];
+		  else if (j < WIDTH + 5)
+	      cout << " ";
+	    else 
+	    	cout << Fleet[1].board[i][j - WIDTH - 5];
 	mainLoop(argc, argv);
 	//cout << "server ends!";
   return 0;

@@ -340,7 +340,7 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type, int kill
   strcpy(text, idk.c_str());
   idk = "\n" + idk;
   lmao = "length 2  |  3 |  4  |  5";
-  glRasterPos2f(0.7, 2.3);
+  glRasterPos2f(0.7, 2.35);
   writeText(text);
   glRasterPos2f(0.70-0.33, 2.5);
   writeText(lmao.c_str());

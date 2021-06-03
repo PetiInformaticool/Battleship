@@ -77,10 +77,16 @@ int main () {
 	pipe[0] = fopen("pipes/serverX", "rb");
 	pipe[1] = fopen("pipes/playerX", "wb");
 	while (1) {
-		b = getBoard(pipe[0]);
+
+		receiveSmecherie();
+
 		if (b.state == 1) {
 			break;
 		}
+		if (b.state == 2) {
+			return 0;
+		}
+			
 		int shiplen, correct;
 		do {
 			shiplen = rand() % 4 + 2;

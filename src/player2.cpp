@@ -78,12 +78,19 @@ int main () {
 	srand(time(NULL));
 	pipe[0] = fopen("pipes/server0", "rb");
 	pipe[1] = fopen("pipes/player0", "wb");
-
+cout << "lmao";
 	while (1) {
-		b = getBoard(pipe[0]);
+					cout << "lmao";
+
+		receiveSmecherie();
 		if (b.state == 1) {
 			break;
 		}
+		if (b.state == 2) {
+			return 0;
+		}
+			cout << "lmao";
+
 		int shiplen, correct;
 		do {
 			shiplen = rand() % 4 + 2;
@@ -96,11 +103,9 @@ int main () {
 			fwrite(&lmao, sizeof(lmao), 1, pipe[1]);
 			fflush(pipe[1]); 
 			fread(&correct, sizeof(correct), 1, pipe[0]);
-			if (correct) {
-			  ships[lmao.len]--;
-			}
  		}while (!correct);
 	}
+ //assert(false);
   while (1) {
 		receiveSmecherie();
 		if (b.state == 1) 
@@ -109,14 +114,34 @@ int main () {
 		if (bomb[1] > 0) {
 			cout << "lmaoooooooooooooo\n";
 			Player2 lmao;
+			do {
 				lmao = {4, rand() % 14, rand() % 14};
-
+			}while (b.board[lmao.x][lmao.y] != '.' || b.board[lmao.x + 1][lmao.y] != '.' || b.board[lmao.x][lmao.y + 1] != '.' || b.board[lmao.x + 1][lmao.y + 1] != '.');
 			fwrite(&lmao, sizeof(Player2), 1, pipe[1]);
 			fflush(pipe[1]);
 			continue;
 		}
 	  if (bomb[0] > 0) {
-			Player2 lmao = {2, rand() % 15, 1};
+			int mx = 0;
+			for (int i = 0; i < 15; i++) {
+			  int cnt = 0;
+			  for (int j = 0; j < 15; j++) {
+					if (b.board[i][j] == '.' && vecin(i, j, b.board))
+					  cnt++;
+				}
+				mx = max(mx, cnt);
+			}
+			vector<int>v;
+			for (int i = 0; i < 15; i++) {
+			  int cnt = 0;
+			  for (int j = 0; j < 15; j++) {
+					if (b.board[i][j] == '.' && vecin(i, j, b.board))
+					  cnt++;
+				}
+				if (cnt >= mx - 1)
+				  v.push_back(i);
+			}
+			Player2 lmao = {2, v[rand() % v.size()], 1};
 			fwrite(&lmao, sizeof(Player2), 1, pipe[1]);
 			fflush(pipe[1]);
 			continue;

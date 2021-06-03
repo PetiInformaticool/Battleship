@@ -1,7 +1,7 @@
 #include "game.h"
 #include "protocol.h"
 
-bool placeShip (board &b, const Player1 a, short ships[], char ch) {
+bool placeShip (board &b, const Player1 a, int ships[], char ch) {
 	if (!ships[a.len])
 	  return 0;
 	board b1 = b;
