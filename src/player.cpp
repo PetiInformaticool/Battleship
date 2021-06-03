@@ -22,6 +22,7 @@ pair < int, int > partial(char b[][WIDTH]) {
 		for (int j = 0; j < WIDTH; ++j) {
 			if (b[i][j] == HIT) {
 				int vecini(0), orientare(-1);
+				int Free = 0;
 				for (int k = 0; k < 4; ++k) {
 					int _i = i + dl[k];
 					int _j = j + dc[k];
@@ -29,8 +30,10 @@ pair < int, int > partial(char b[][WIDTH]) {
 						continue;
 					if (b[_i][_j] == HIT)
 						++vecini, orientare = (k > 1);
+					if (b[_i][_j] == FREE)
+						Free++;
 				}
-				if (vecini > 1)
+				if (vecini > 1 || Free == 0)
 					continue;
 				if (orientare + 1) {
 					for (int k = orientare * 2; k < (1 + orientare) * 2; ++k) {
@@ -57,14 +60,22 @@ pair < int, int > partial(char b[][WIDTH]) {
 	}
 	return {-1, -1};
 }
+board b;
+FILE* pipe[2];
+
+int ships[10]= {0, 0, 3, 3, 2, 2};
+int bomb[] = {2, 2};
+
+void receiveSmecherie () {
+  b = getBoard(pipe[0]);
+  getShips(pipe[0], ships);
+  getBomb(pipe[0], bomb);
+}
 
 int main () {
 	srand(time(NULL)*123456);
-	FILE* pipe[2];
 	pipe[0] = fopen("pipes/serverX", "rb");
 	pipe[1] = fopen("pipes/playerX", "wb");
-	board b;
-	int ships[]= {0, 0, 3, 2, 1, 4};
 	while (1) {
 		b = getBoard(pipe[0]);
 		if (b.state == 1) {
@@ -88,7 +99,7 @@ int main () {
  		}while (!correct);
 	}
   while (1) {
-		b = getBoard(pipe[0]);
+		receiveSmecherie();
 		if (b.state == 1) 
 		  break;
 		
@@ -102,7 +113,7 @@ int main () {
 		}
 		else 
 			x = part.first, y = part.second;
-	  Player2 lmao = {x, y};
+	  Player2 lmao = {1, x, y};
 	  fwrite(&lmao, sizeof(Player2), 1, pipe[1]);
 	  fflush(pipe[1]);
 	  

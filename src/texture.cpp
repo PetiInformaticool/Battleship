@@ -3,15 +3,51 @@
 #include <stdio.h>
 #include <GL/freeglut.h>
 #include <GL/glu.h>
+#include <bits/stdc++.h>
+
+using namespace std;
 
 #define STB_IMAGE_IMPLEMENTATION
    #include "stb_image.h"
    
 int windowHeight, windowWidth;
-
-    GLuint tex;
     
  const float PI = 4 * atan(1);
+ 
+ 
+ 
+struct Picture {
+  int width, height, nr;
+  unsigned char* texDat;
+  GLuint tex;
+} water;
+
+ 
+ Picture loadTexture(char* path) {
+  Picture p;
+  p.texDat = stbi_load(path, &p.width, &p.height, &p.nr, 0);
+  glGenTextures(1, &p.tex);
+  glBindTexture(GL_TEXTURE_2D, p.tex);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  /*cout << p.nr << "\n";
+  for (int i = 0; i < p.width; i++)
+    for (int j = 0; j < p.height; j++) {
+			cout << static_cast<int>(p.texDat[i * p.width + j]) << " " << static_cast<int>(p.texDat[i * p.width + j + 1]) << " " << static_cast<int>(p.texDat[i * p.width + j+2]) << "\n";
+		 }*/
+  int channels;
+  if (p.nr == 4) {
+    channels = GL_RGBA;
+  } else if (p.nr == 3) {
+    channels = GL_RGB;
+  } else {
+    assert(false);
+  }
+	glTexImage2D(GL_TEXTURE_2D, 0, channels, p.width, p.height, 0, channels, GL_UNSIGNED_BYTE, p.texDat);
+  return p;
+}
     
 void writeText(const char* string) {
 	glColor3f(1.0f, 1.0f, 1.0f);
@@ -67,10 +103,14 @@ void reshape(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+int i = 0, j = 0;
+
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	drawRegPoly(0.0, 0.0, 1.0, 400);
+	glRasterPos2f(0.5, 1.f);
+	writeText("llll");
+	glRasterPos2f(0.5, 0.5);
+	writeText("oooo");
 	glFlush();
   glutSwapBuffers();
 }
@@ -89,31 +129,18 @@ int main(int argc, char** argv)
     glutCreateWindow("windowname");
 
     //create test checker image
-    int width, height, nr;
-    unsigned char* texDat = stbi_load("water-texture-breeze\ (1).jpg", &width, &height, &nr, 0);
-    assert(texDat != NULL);
-		printf("%d", nr);
     //upload to GPU texture
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texDat);
-    glBindTexture(GL_TEXTURE_2D, 0);
     
+		water = loadTexture("XING_B24.BMP");
 
     //match projection to window resolution (could be in reshape callback)
 		//glutReshapeFunc(reshape);
     glutReshapeFunc(reshape);
 		glutIdleFunc(nextmove);
 		glutDisplayFunc(display);
-    		 //getchar();
-		//return 0;
-
-    //clear and draw quad with texture (could be in display callback)
 		glutMainLoop();
+		
+	   
 
     return 0;
 }

@@ -156,8 +156,8 @@ void drawBoat2() {
 
 
 void drawBomb(float x, float y, float r, int edges) {
-	glScalef((GLfloat)1.0/9.0, (GLfloat)1.0/9.0, 1.0);
-	glColor4f(0.0, 0.5, 0.0, 0.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glScalef((GLfloat)4.0/5.0, (GLfloat)4.0/5.0, 1.0);
 	glLineWidth(1.0f);
   glBegin(GL_POLYGON);
   for (int i = 0; i < edges; i++) {
@@ -177,6 +177,7 @@ void drawBomb(float x, float y, float r, int edges) {
 		glEnd();
 		
 	}
+	//glScalef(5.0/4.0, 5.0/4.0, 1.0);
 }
 
 void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
@@ -193,11 +194,10 @@ void findBoat(board b, char l, int &x1, int &y1, int &x2, int &y2) {
 		}
 }
 
-void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
+void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type, int killed[][10], string winnerwinnerchickendinner) {
 	glClear(GL_COLOR_BUFFER_BIT);
   glLoadIdentity();
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  float x = 1.0, y = 1.0;
 	glColor3f(1.0f, 1.0f, 1.0f);
   glBindTexture(GL_TEXTURE_2D, water.tex);
   glEnable(GL_TEXTURE_2D);
@@ -207,12 +207,56 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
     glTexCoord2f(1, 1); glVertex2f( 2.50f, -1.75f);
     glTexCoord2f(1, 0); glVertex2f( 2.50f,  0.75f);
 	glEnd();
+
 	glDisable(GL_TEXTURE_2D);
 	glLoadIdentity();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glBindTexture(GL_TEXTURE_2D, header.tex);
+	glLoadIdentity();
+  glEnable(GL_TEXTURE_2D);
+  glColor3f(1.f, 1.f, 1.f);
+  glBegin(GL_POLYGON);
+		glTexCoord2f(0, 0); glVertex2f(-1.0f-1.75f+0.25f, 1.75+0.50f-1.5f);
+    glTexCoord2f(0, 1); glVertex2f(-1.0f-1.75f+0.25f, 2.50+0.25-1.5f);
+    glTexCoord2f(1, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
+    glTexCoord2f(1, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.50f);
+	glEnd();
+	glBegin(GL_POLYGON);
+	  glTexCoord2f(0, 0); glVertex2f(-1.5f, 1.25);
+    glTexCoord2f(0, 1); glVertex2f(1.50f, 1.25);
+    glTexCoord2f(1, 1); glVertex2f(1.25f, 1.50f);
+    glTexCoord2f(1, 0); glVertex2f(-1.25, 1.50f);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glRasterPos2f(-0.5, 1.35);
+	writeText(winnerwinnerchickendinner.c_str());
 	//drawRect(-2.50f, 0.75f, 2.50f, -1.75f);
   glColor3f(1.0f, 1.0f, 1.0f);
+  string idk, lmao;
+  lmao = "length 2  |  3 |  4  |  5";
+             // 0/3 0/3 0/2 0/2;
+  for (int i = 2; i <= 5; i++) {
+	  idk += to_string(killed[0][i]);
+	  idk += "/";
+	  if (i == 2)
+	    idk += "3 ";
+	  if (i == 3)
+	    idk += "3 ";
+	  if (i == 4)
+	    idk += "2 ";
+	  if (i == 5)
+	    idk += "2";
+	}
   glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
-  glScalef(x, y, 1.0);
+  idk = idk;
+  int n = idk.size(), m = lmao.size();
+  char text[n + 1], text2[m + 1];
+  strcpy(text, idk.c_str());
+  strcpy(text2, lmao.c_str());
+  glRasterPos2f(0.5, 2.35);
+  writeText(text);
+  glRasterPos2f(0.17, 2.5);
+  writeText(text2);
 	for (int i = 0; i < 15; i++)
 		for (int j = 0; j < 15; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
@@ -225,7 +269,6 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 				glVertex2f(2.0f * i / 15, 2.0f * (j + 1.0f) / 15);
 			glEnd();
 		}
-  glScalef(x, y, 1.0);
   cout << Move.x << " " << Move.y << "\n"; 
   if (turn == 1 && Move.x != -1 && type == 1) {
 		for (int i = 0; i < 15; i++)
@@ -246,15 +289,11 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 			  continue;
 			else if (b[0].board[x][y] == 'X') {
 				glColor3f(0.8, 0.0, 0.0);
-				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
+				drawBomb(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 0.5f/15, 400);
 			}
 			else if (b[0].board[x][y] == '*') {
-				glColor3f(0.2f, 0.2f, 0.2f);
-				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
+				glColor3f(0.25, 0.60, 0.75);
+				drawBomb(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 0.5f/15, 400);
 			}
  		}
  	
@@ -269,7 +308,6 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 			drawBoat();
 			glLoadIdentity();
 			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
-			glScalef(x, y, 1.0);
 		}
 		if (y1 == y2 && x1 != -1) {
 			int i = y2;
@@ -279,11 +317,33 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 			drawBoat2();
 			glLoadIdentity();
 			glTranslatef(-2.5f+0.25f, -1.5f, 0.0);
-			glScalef(x, y, 1.0);
 		}
 	}
 	glLoadIdentity();
+	glColor3f(1.0, 1.0, 1.0);
 	glTranslatef(0.5f-0.25f, -1.5f, 0.0);
+	
+	idk = "";
+	for (int i = 2; i <= 5; i++) {
+	  idk += to_string(killed[1][i]);
+	  idk += "/";
+	  if (i == 2)
+	    idk += "3 ";
+	  if (i == 3)
+	    idk += "3 ";
+	  if (i == 4)
+	    idk += "2 ";
+	  if (i == 5)
+	    idk += "2";
+	}
+  idk = idk;
+  strcpy(text, idk.c_str());
+  idk = "\n" + idk;
+  lmao = "length 2  |  3 |  4  |  5";
+  glRasterPos2f(0.7, 2.3);
+  writeText(text);
+  glRasterPos2f(0.70-0.33, 2.5);
+  writeText(lmao.c_str());
 	for (int i = 0; i < 15; i++)
 		for (int j = 0; j < 15; j++) {
 			glColor3f(0.0, 69.0/255.0, 94.0/255.0);
@@ -304,7 +364,6 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 					drawLine(2.0 * i / 15 + 1.0/15, 0, 2.0 * i / 15+1.0/15, 2.0);
 					drawLine(0, 2.0 * j / 15 + 1.0/15, 2, 2.0 * j / 15  + 1.0/15);
 				}
-	  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 	for (int i = 0; i < 15; i++)
 	  for (int j = 0; j < 15; j++) {
@@ -314,16 +373,12 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 			  continue;
 			if (b[1].board[x][y] == FREE);
 			else if (b[1].board[x][y] == 'X') {
-				glColor3f(0.7, 0.0, 0.0);
-				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
+				glColor3f(0.8, 0.0, 0.0);
+				drawBomb(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 0.5f/15, 400);
 			}
 			else if (b[1].board[x][y] == '*') {
-				glColor3f(0.2f, 0.2f, 0.2f);
-				glLineWidth(4.0f);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * (j + 1.0f) / 15-0.02, 2.f * i / 15+0.02, 2.f * j / 15+0.02);
-				drawLine(2.f * (i + 1.0f) / 15-0.02, 2.f * j / 15+0.02, 2.f * i / 15+0.02, 2.f * (j + 1.0f) / 15-0.02);
+				glColor3f(0.25, 0.60, 0.75);
+				drawBomb(2.0 * i / 15 + 1.0/15, 2.0 * j / 15 + 1.0/15, 0.5f/15, 400);
 			}
  		}
  	for (char l = '0'; l <= '9'; l++) {
@@ -351,39 +406,40 @@ void drawBoard (board b[], int cnt[], Player2 Move, int turn, int type) {
 			glTranslatef(0.5f-0.25f, -1.5f, 0.0);
 		}
 	}
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  glBindTexture(GL_TEXTURE_2D, header.tex);
-	glLoadIdentity();
-  glEnable(GL_TEXTURE_2D);
-  glColor3f(1.f, 1.f, 1.f);
-  glBegin(GL_POLYGON);
-		glTexCoord2f(0, 0); glVertex2f(-1.0f-1.75f+0.25f, 1.75+0.50f-1.5f);
-    glTexCoord2f(0, 1); glVertex2f(-1.0f-1.75f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(1, 1); glVertex2f(1.0f + 1.25f+0.25f, 2.50+0.25-1.5f);
-    glTexCoord2f(1, 0); glVertex2f(1.0f + 1.25f+0.25f, 1.75f+0.50f-1.50f);
-	  //drawRect(-1.0f-1.75f, 1.75f+0.50f, 1.0f+1.25f, 2.50f+0.25f);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	drawCoordinatesSystem();
+	
+	//drawCoordinatesSystem();
 	glLoadIdentity();
 	glColor3f(1.0f, 1.0f, 1.0f);
   glRasterPos2f(-0.25f+0.05f, 1.25f+0.10f);
-  writeText("\n\nSCORE");
+  writeText("\n\nSCORE"); 
   glRasterPos2f(-0.25f+0.12f, 1.25f-0.10f);
-	char scor[8];
-	scor[0] = '\n';
-	scor[1] = '\n';
-	scor[2] = cnt[0] + '0';
-	scor[3] =' ';
-	scor[4] = '-';
-	scor[5] = ' ';
-	scor[6] = cnt[1] + '0';
+	char scor[12];
+	scor[0] = scor[1] = '\n';
+	int lel;
+	if (cnt[0] == 10) {
+		scor[2] = '1'; scor[3] = '0';
+		lel = 4;
+	}
+	else
+	  scor[2] = cnt[0] + '0', lel = 3;
+	scor[lel] = ' ';
+	scor[lel + 1] = '-';
+	scor[lel + 2] = ' ';
+	lel += 3;
+	if (cnt[1] == 10) {
+		scor[lel] = '1'; scor[lel + 1] = '0';
+		lel += 2;
+	}
+	else
+	  scor[lel] = cnt[1] + '0', lel++;
+	scor[lel] = '\0';
+	 
   glLoadIdentity();
   writeText(scor);
-  glRasterPos2f(-1.40f, 1.f);
-	writeText("Player 1");
-	glRasterPos2f(1.15f, 1.f);
-	writeText("Player 2");
+  //glRasterPos2f(-1.40f, 1.f);
+	//writeText("Player 1");
+	//glRasterPos2f(1.15f, 1.f);
+	//writeText("Player 2");
   glFlush();
   glutSwapBuffers();
 }
@@ -400,14 +456,17 @@ void reshape(int w, int h) {
   glLoadIdentity();
   //glOrtho(-2.7, 2.7, -2.0, 2.0, -10.0, 10.0);
 	if (w <= h)
-    glOrtho(-2.0, 2.0, -2.0 * (GLfloat) h / (GLfloat) w,
+    glOrtho(-2.7, 2.7, -2.0 * (GLfloat) h / (GLfloat) w,
       2.0 * (GLfloat) h / (GLfloat) w, -10.0, 10.0);
   else {
 		//cout << "salllllll\n\n\n";
-		coordx = 4* (GLfloat) w / (GLfloat) h;
-		coordy = 4;
-		glOrtho(-2.0 * (GLfloat) w / (GLfloat) h,
-      2.0 * (GLfloat) w / (GLfloat) h, -2.0, 2.0, -10.0, 10.0);
+		float x = 1.0 * w / h, y;
+		if (x >= 1.6)
+		  y = 1.5;
+		else
+		  y = 1;
+		glOrtho(-2.7 * y,
+      2.7 * y, -2.0, 2.0, -10.0, 10.0);
 	}
   glMatrixMode(GL_MODELVIEW);
 }

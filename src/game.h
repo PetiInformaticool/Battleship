@@ -25,6 +25,7 @@ struct Player1 {
 };
 
 struct Player2 {
+	int type;
   int x, y;
 };
 
