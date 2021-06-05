@@ -455,19 +455,16 @@ void reshape(int w, int h) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   //glOrtho(-2.7, 2.7, -2.0, 2.0, -10.0, 10.0);
-	if (w <= h)
-    glOrtho(-2.7, 2.7, -2.0 * (GLfloat) h / (GLfloat) w,
-      2.0 * (GLfloat) h / (GLfloat) w, -10.0, 10.0);
-  else {
+
 		//cout << "salllllll\n\n\n";
-		float x = 1.0 * w / h, y;
+		float x = 1.0 * w / h, y= 1.5;
 		if (x >= 1.6)
 		  y = 1.5;
 		else
 		  y = 1;
 		glOrtho(-2.7 * y,
       2.7 * y, -2.0, 2.0, -10.0, 10.0);
-	}
+	
   glMatrixMode(GL_MODELVIEW);
 }
 
