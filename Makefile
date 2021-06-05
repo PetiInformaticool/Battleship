@@ -1,3 +1,7 @@
+	
+run: bin/server bin/player bin/player2  | bin pipes/playerX pipes/player0 pipes/server0 pipes/serverX
+	 bin/server & bin/player & bin/player2 & wait
+
 pipes:
 	mkdir pipes
 	
@@ -49,7 +53,4 @@ kill:
 	
 clean:
 	rm bin -R
-	
-run: bin/server bin/player bin/player2  | bin pipes/playerX pipes/player0 pipes/server0 pipes/serverX
-	 bin/server & bin/player & bin/player2 & wait
 
